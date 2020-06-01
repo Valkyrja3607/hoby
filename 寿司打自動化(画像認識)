@@ -1,0 +1,89 @@
+from selenium import webdriver
+import chromedriver_binary
+from selenium.webdriver.common.action_chains import ActionChains
+from time import sleep
+#Chrome Driverのパス
+path=__file__
+driver_path=path+"/./chromedriver"
+print(driver_path)
+#ドライバーを開く
+driver=webdriver.Chrome()
+
+#ウィンドウサイズを固定
+window=(500, 420+125)
+driver.set_window_size(*window)
+
+
+#寿司打を開く
+target_url='http://typingx0.net/sushida/play.html'
+driver.get(target_url)
+
+
+#クリックする前にロード時間待機
+sleep(15)
+
+#スタートボタンの座標
+center_x=250
+center_y=256
+
+#スタートボタンをクリックする
+actions=ActionChains(driver)
+actions.move_to_element_with_offset(webgl_element,center_x,center_y).click().perform()
+print("スタートボタンをクリックしました。")
+
+#ボタンが表示されるまで待つ
+sleep(2)
+
+#高級コースをクリックする
+actions=ActionChains(driver)
+actions.move_to_element_with_offset(webgl_element,center_x,center_y+50).click().perform()
+print("高級のボタンをクリックしました。")
+
+#オススメ
+#actions.move_to_element_with_offset(webgl_element,center_x,center_y).click().perform()
+
+
+target_xpath='/html/body'
+element=driver.find_element_by_xpath(target_xpath)
+element.send_keys(" ")
+
+from PIL import Image
+import pyocr
+import pyocr.builders
+#PyOCRのツール
+tool=pyocr.get_available_tools()[0]
+
+from time import time
+start=time()
+while time()-start<150:
+    #ファイル名
+    fname=path+"/../sample_image.png"
+    #スクショ
+    driver.save_screenshot(fname)
+
+    #ローマ字の部分を取り出す
+    im=Image.open(fname).crop((120,330,600,390))
+    #画像を二値化
+    im=im.convert("L")
+    for i in range(im.size[0]):
+        for j in range(im.size[1]):
+            if im.getpixel((i,j))>=170:
+                im.putpixel((i,j),0)
+            else:
+                im.putpixel((i,j),255)
+    im.save("sample.png")
+    #toolで文字を認識させる
+    text=tool.image_to_string(im,lang='eng',builder=pyocr.builders.TextBuilder())
+
+    #textを確認
+    print(text)
+
+    #文字を入力させる
+    element.send_keys(text)
+
+
+input("何か入力してください")
+
+# ドライバーを閉じる
+driver.close()
+driver.quit()
