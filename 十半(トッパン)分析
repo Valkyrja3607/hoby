@@ -1,0 +1,82 @@
+#m:i%10==0 p:1 s:2 j:3
+hai=list(range(1,10))+list(range(11,20))+list(range(21,30))+list(range(31,38))
+#dp[i][j] i枚引いたとき合計値j/2で役ができる確率
+toppan=[[0]*22 for i in range(6)]
+gomai=[[0]*22 for i in range(6)]
+burst=[0]*10
+kiso=[[0]*22 for i in range(6)]
+k=100/(34**5)
+import itertools
+for l in itertools.product(hai,repeat=5):
+    if len(set(l))==1:
+        continue
+    ll=[]
+    tmp=0
+    for i,j in enumerate(l):
+        n=j%10
+        if j//10==3:
+            if n==1 and tmp<=0.5:
+                n=10
+                ll.append(10)
+                tmp+=10
+            else:
+                n=0.5
+                ll.append(0.5)
+                tmp+=0.5
+        else:
+            ll.append(n)
+            tmp+=n
+
+        if tmp>10.5:
+            if tmp-ll[-1]<8:
+                if ll[0]==0.5:
+                    burst[0]+=k/0.1764704562
+                else:
+                    burst[ll[0]]+=k/0.0882352281
+            continue
+        kiso[i+1][int(tmp*2)]+=k
+        if tmp==10.5:
+            t=0
+            for idx in range(i+1):
+                t+=ll[idx]
+                toppan[idx+1][int(t*2)]+=k
+        if i==4:
+            t=0
+            for idx in range(i+1):
+                t+=ll[idx]
+                gomai[idx+1][int(t*2)]+=k
+
+
+import numpy as np
+toppan=np.array(toppan[1:])
+print("toppan:",toppan[0].sum())
+gomai=np.array(gomai[1:])
+print("gomai:",gomai[0].sum())
+kiso=np.array(kiso[1:])
+toppan=np.nan_to_num(100*toppan/kiso)
+gomai=np.nan_to_num(100*gomai/kiso)
+
+
+print("kiso")
+print(kiso)
+print("burst")
+print(burst)
+print("toppan")
+print(toppan)
+print("gomai")
+print(gomai)
+
+
+
+
+
+
+
+
+            
+
+
+
+
+
+
