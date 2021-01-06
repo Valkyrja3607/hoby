@@ -1,3 +1,8 @@
+# create directory named "voice_data" and "text_data" in same directory
+# ___speech_recognition.py
+#  |_voice_data
+#  |_text_data
+
 import speech_recognition as sr
 import os
 from pydub import AudioSegment
